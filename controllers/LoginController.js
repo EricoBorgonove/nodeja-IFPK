@@ -35,12 +35,30 @@ module.exports = class LoginController{
                     error:'Usuário ou senhA inválido'
                 }).end()
             }
+// res.json('ok')
+        }
+    }
+        static validaToken(req,res,next){
+            const token = req.headers["authorization"]
+            jwt.verify(token, process.env.JWT_KEY,(error,success) =>{
+                //console.log(sucess)
+                if(!error){
+                    req.userId = success
+                    next()
+                }else{
+                    res.status(401).json({
+                        error: "token inválido"
+                    })
+                }  
+            })
+        }
+        static async user (req, res){
+            const usuario = await usuarios.findByPk(req.userId, {
+                attributes: ['id','nome','email','data_nascimento']
+            })
+            res.json(usuario)
+
+            
 
         }
-
-        
-
-
-         // res.json('ok')
-    }
 }
